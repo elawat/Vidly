@@ -34,20 +34,34 @@ namespace Vidly.Controllers
             return Content("id=" + id);
         }
 
-        public ActionResult Index(int? pageIndex, string sortBy)
+        public ViewResult Index(int? pageIndex, string sortBy)
         {
-            if (!pageIndex.HasValue)
-                pageIndex = 1;
+            //if (!pageIndex.HasValue)
+            //    pageIndex = 1;
 
-            if (String.IsNullOrWhiteSpace(sortBy))
-                sortBy = "Name";
+            //if (String.IsNullOrWhiteSpace(sortBy))
+            //    sortBy = "Name";
 
-            return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
+            //return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
+
+            var movies = GetMovies();
+
+            return View(movies);
+
         }
         [Route("movies/released/{year}/{month:regex(\\d{2}):range(1, 12)}")]
         public ActionResult ByReleaseDate(int year, int month)
         {
             return Content(year + "/" + month);
+        }
+
+        private IEnumerable<Movie> GetMovies()
+        {
+            return new List<Movie>
+            {
+                new Movie { Id = 1, Name = "Pociag" },
+                new Movie { Id = 2, Name = "Nie lubie poniedzialkow" }
+            };
         }
     }
 }
