@@ -22,7 +22,74 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
 
+        public ViewResult Index()
+        {
+            //if (!pageIndex.HasValue)
+            //    pageIndex = 1;
 
+            //if (String.IsNullOrWhiteSpace(sortBy))
+            //    sortBy = "Name";
+
+            //return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
+
+            var movies = _context.Movies.Include(m => m.Genre).ToList();
+
+            return View(movies);
+
+        }
+
+        public ActionResult New()
+        {
+            var genres = _context.Genres.ToList();
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+            return View("MovieForm", viewModel);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
+            if (movie == null)
+                return HttpNotFound();
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+
+        [HttpPost]
+        public ActionResult Save(Movie movie) // ET will automatially map request data to this object (model binding)
+                                                    // to address security issues (limit properties to update) we can create seperate class in pass it in this action
+                                                    // UpdateCustomerDto simple data structyre, small representation of customer with only property to be updated
+        {
+            if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+                movieInDb.Name = movie.Name;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.NumberInStock = movie.NumberInStock;
+
+            }
+
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
+        }
+
+    
         // GET: Movies/Random
         public ActionResult Random()
         {
@@ -42,26 +109,8 @@ namespace Vidly.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Edit(int id)
-        {
-            return Content("id=" + id);
-        }
-
-        public ViewResult Index()
-        {
-            //if (!pageIndex.HasValue)
-            //    pageIndex = 1;
-
-            //if (String.IsNullOrWhiteSpace(sortBy))
-            //    sortBy = "Name";
-
-            //return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
-
-            var movies = _context.Movies.Include(m => m.Genre).ToList();
-
-            return View(movies);
-
-        }
+     
+       
 
         public ActionResult Details(int id)
         {

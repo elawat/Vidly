@@ -1,0 +1,39 @@
+﻿
+@model Vidly.ViewModels.CustomerFormViewModel
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Customer</h2>
+
+@using (Html.BeginForm("Save", "Customers")) //disposable object, <form></form>
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Name) <!--helper method and lambda extression-->
+        @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <!--label for="Birthdate">Date of Birth</label>
+            can alos be like above, better below helper method-->
+        @Html.LabelFor(m => m.Customer.Birthdate) <!--lambda extression-->
+        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+    </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.MembershipTypeId) <!--helper method and lambda extression-->
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId, new SelectList(Model.MembershipTypes, "Id", "Name"), "Select Membership Type", new { @class = "form-control" })
+    </div>
+    <div class="checkbox">
+        <label>
+            @Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewsletter) Subscribed to Newsletter
+        </label>
+    </div>
+    @Html.HiddenFor(m => m.Customer.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+
+
+
+
+}
+
